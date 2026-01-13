@@ -17,9 +17,9 @@ extern char ***_NSGetEnviron(void);
 extern int proc_listallpids(void *, int);
 extern int proc_pidpath(int, void *, uint32_t);
 
-static const char *cynject_path = ROOT_PATH("/usr/bin/cynject");
-static const char *inject_criticald_path = ROOT_PATH("/electra/inject_criticald");
-static const char *dylib_path = ROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/AppSyncUnified-installd.dylib");
+static const char *cynject_path;
+static const char *inject_criticald_path;
+static const char *dylib_path;
 static const char *dispatch_queue_name = NULL;
 static const char *process_name = "installd";
 static int process_buffer_size = 4096;
@@ -106,6 +106,11 @@ int main(int argc, char *argv[]) {
 		printf("FATAL: asu_inject must be run as root.\n");
 		return 1;
 	}
+
+	/* Initialize paths at runtime to avoid statement-expression initializers at file scope */
+	cynject_path = ROOT_PATH("/usr/bin/cynject");
+	inject_criticald_path = ROOT_PATH("/electra/inject_criticald");
+	dylib_path = ROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/AppSyncUnified-installd.dylib");
 
 	if ((access(cynject_path, X_OK) == -1) && (access(inject_criticald_path, X_OK) == -1)) {
 		printf("FATAL: Unable to locate any suitable injectors! (%s, %s)\n", cynject_path, inject_criticald_path);
