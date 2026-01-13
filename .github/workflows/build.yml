@@ -84,6 +84,7 @@ jobs:
           make
           make package
           echo "package=$(ls -t debs | head -n1)" >>$GITHUB_OUTPUT
+          echo "packages=$(ls -t debs/*.deb | xargs -n1 basename | tr '\n' ' ')" >>$GITHUB_OUTPUT
           echo -e "==> \033[1mSHASUM256: $(shasum -a 256 debs/*.deb | cut -f1 -d' ')\033[0m"
 
         env:
@@ -94,5 +95,5 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: AppSync Unified
-          path: ${{ github.workspace }}/main/debs/${{ steps.build_package.outputs.package }}
+          path: ${{ github.workspace }}/main/debs/*.deb
           if-no-files-found: error
